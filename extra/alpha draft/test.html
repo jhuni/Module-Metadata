@@ -1,0 +1,99 @@
+<html>
+
+<head>
+
+<script type="text/javascript">
+<!--
+
+var slurp = function (url, callback) {
+	
+	// Wrap the whole thing around a try so as to detect any errors.
+	var requestObject, text;
+	try {
+		
+		requestObject = typeof ActiveXObject !== "undefined" ? new ActiveXObject("Microsoft.XMLHTTP") : new XMLHttpRequest();
+	
+		// Start using the requestObject
+		requestObject.open("GET", url, false);
+		
+		requestObject.send(null);
+		
+		if (requestObject.status === 200 || requestObject.status === 0) {
+			
+			text = requestObject.responseText;
+			
+			if (typeof text === 'string') {
+				callback(text);	
+			}
+			
+		}
+		
+		
+	} catch (e) {
+
+	}
+	
+};
+
+var getFullName = function(val) {
+	if (typeof val === 'string') {
+		return val;
+	} else {
+		return [val.language, val.name, val.version, val.authority].join("-");
+	}
+};
+
+var require = function(url, callback) {
+	
+	slurp(url, function(js) {
+		var pkg = eval('(function(){' + js + '})();' );
+		CJS.loaded[CJS.next.id] = pkg;
+		callback(pkg);
+	});
+	
+};
+
+var CJS = {
+	loaded: {},
+};
+CJS_TOP = {};
+
+var META = function(meta) {
+	CJS.next = meta;
+	
+	var rval = {};
+	var deps = meta.dependencies;
+	
+	for (var i in deps) {
+		if (deps.hasOwnProperty(i)) {
+			rval[i] = CJS.loaded[getFullName(deps[i])];
+		}
+	}
+	
+	CJS_TOP = rval;
+	
+};
+
+
+require("./lib/Utils/add.js", function(){});
+require("./lib/Utils/inc.js", function(){});
+require("./lib/Utils/numeric.js", function(numeric) {
+	
+	alert( numeric.multiply(1,2) );
+	
+});
+
+
+
+
+
+//-->
+</script>
+
+</head>
+
+<body>
+
+</body>
+
+</html>

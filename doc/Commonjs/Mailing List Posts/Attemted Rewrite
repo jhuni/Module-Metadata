@@ -1,0 +1,8 @@
+As such I realized that Perl's loading functions are too tied to server-side development, so I looked for alternative solutions, and I hacked together a regexp that takes all of JSAN's require statements similar to what Modules/Transport does, yet this wasn't a satisfactory solution it was just a hacked together solution to make JavaScript behave like other server-side languages, so I built this proposal:
+
+http://wiki.commonjs.org/wiki/Modules/Metadata
+
+Another problem with the JSAN loader is it has dependencies of its own such as XMLHttpRequest, as such I think dependencies should be separated from on-demand-javascript functionality, that way even the loader can have its own metadata which is convenient. 
+
+Advantages:
+1. Backwards compatibility: there should be multiple independent meta-specs, that way when we move to a different Metaspec in Modules/2.0 all of the old stuff will still work.

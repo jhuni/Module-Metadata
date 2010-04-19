@@ -1,0 +1,5 @@
+The method I have proposed for JSAN is to use a source filter on the use server that filters out all unnecessary use statements from your code, and replaces the other ones with the files that are being requested, so that would implement combo loading...
+
+Good modules should have tons of use statements, that way you load just the components you want, as such I think it makes sense to use a source filter to get rid of some of those use statements to reduce your resulting file size. (The loader will send the list of previously loaded stuff over $_POST)
+
+The thing I still haven't worked out is importing/exporting functions... Should everything be exported into a single character like in the YUI, so you prefix everything with a Y? 

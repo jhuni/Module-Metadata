@@ -1,0 +1,11 @@
+Currently you can use YUI().use(), dojo.require(), JooseX.Namespace.Dependended, JSAN.use(), Aijle Load(), or you can just use CommonJS's require. I really like YUI 3.0, their library is great, the sandboxing and the modularity, yet their use statement doesn't seem to be able to load non yui modules (yet).
+
+In terms of commonjs, the require() statement in Modules/1.0 and in all of the CommonJS code that I have seen is that it is synchronous and it doesn't utilize combo loading. Modules/Transport seems to try to fix this, however, I don't think any of those solutions are truly satisfactory.
+
+I think it makes sense to store you dependencies in your META.json file, because you need to store your dependencies in there anyway so that if your module is being downloaded by a package manager, the package manager can fetch all the associated modules for you. Also if your script is being requested from a Use server, then the Use server can do what is known as combo loading and fetch the dependencies for you to reduce your HTTP requests.
+
+There won't have to be any "require" statements in the actual file because the dependencies can just be handled by the Use Server which will build the requested script and handle recursive dependencies. If, however, you are building a library which loads modules on-demand rather then as a dependency, in that case an async require request should be used.
+
+http://www.openjsan.org/src/a/au/autarch/Animation.Resize-0.10/META.json
+
+If you review that META.json file, which is similar to the META files that were put in Packages/1.0, the dependencies are just in the "requires" object, so the Use Server could just use that Meta data. It might also make sense to store some dependencies data within the actual file, for convience purposes, then use a source filter to get rid of it in some cases....

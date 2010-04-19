@@ -1,0 +1,257 @@
+'''STATUS: PROPOSALS'''
+
+== Metadata ==
+
+[[Packages/1.0]] specifies a JSON format for describing packages, this page proposes that similar JSON metadata should be used to describe module files.
+
+[[Modules/1.1.1]] specifies a method of handling modules that is dependent upon introduced keywords: exports, module, and require, of those require is not very browser-friendly, since it is synchronous and it isn't built to handle combo loading. As such, module transport formats recommend that you use regexes such as this one to get the module's dependencies:
+
+<source>
+// from: http://github.com/jbrantly/yabble/blob/master/yabbler.js
+var requireRegex = /(?:^|[^\w\$_.])require\s*\(\s*("[^"\\]*(?:\\.[^"\\]*)*"|'[^'\\]*(?:\\.[^'\\]*)*')\s*\)/g;
+</source>
+
+This is a potentially dangerous process, what if the require statement is in an eval block, or if it is being passed something other then a string literal? These bad practices are made possible by the current specification, instead dependency metadata should be distinguished from on-demand-javascript requests, that way even the loader script can have metadata.
+
+Furthermore, using blocking IO can still be disadvantageous on the server-side especially if you are requiring a module which hasn't been installed locally, forcing the loader to block until it gets the module from online.
+
+== Format ==
+
+Module's metadata should be stored in JSON as package metadata is, since JSON is built right into JavaScript.
+
+<source>
+{
+
+    // This uses the format:
+    // language, name, version, authority
+    "id": "js-Utils.slurp-1.0-jsan+jhuni",
+
+    // This makes the module return exports like in Modules/1.0.
+    "returns": "exports",
+
+    // This will make sure XMLHttpRequest works in IE.
+    "builtins": ["XMLHttpRequest"],
+
+    // This will pass the variables io and each to your module.
+    "use": {
+
+        "each": "js-Utils.each-1.0-jsan+jhuni",
+
+        "io": {
+
+            // This is for rhino users:
+            "java": "java-java.io-1.4-sun",
+
+            // This is for parrot users:
+            "perl": "perl-File::Slurp-1.2-cpan+DROLSKY"
+
+        }
+
+    }
+
+}
+</source>
+
+== Sample Code ==
+
+;math.js:
+<source>
+META({
+
+    "id": "js-Utils.add-1.0-jsan+jhuni",
+
+    "builtins": ["Array.prototype.reduce"]
+
+});
+
+// This specification lets you return functions, since some people
+// have requested the functionality
+return function() {
+
+    return( Array.prototype.reduce.call(arguments, function(a, b) {
+        return a + b;
+    }) );
+
+};
+</source>
+
+;increment.js:
+<source>
+META({
+
+    "id": "js-Utils.inc-1.0-jsan+jhuni",
+
+    "returns": "exports",
+
+    "use": {
+        "add": "js-Utils.add-1.0-jsan+jhuni"
+    }
+
+});
+
+
+// Package:
+exports.increment = function(val) {
+    return add(val, 1);
+};
+</source>
+
+;program.js:
+<source>
+META({ 
+
+    "id": "js-Utils.program-1.0-jsan+jhuni",
+    
+    "use": {
+        "inc": "js-Utils.inc-1.0-jsan+jhuni"
+    }
+
+});
+
+// Package
+var a = 1;
+inc(a); // 2
+</source>
+
+== Loader ==
+
+One of the advantages of this proposal is that even the loader script can have metadata, because usually loader scripts require lots of utilities, builtins, and other functionality. The yabble loader actually manually includes utilities similar to the ones below, furthermore the JSAN loader also requires lots of utilities.
+
+This sort of practice will leave normalizing XMLHttpRequest, and other builtins to external scripts. For example there may be special normalizers for some server-side platforms which don't have XMLHttpRequest, and some old browsers such as Opera 7.0 have normalizers based upon java.
+
+;loader.js:
+<source>
+META({
+
+    "id": "js-ensure-1.2-commonjs",
+    
+    "returns": "exports",
+    
+    "builtins": [
+        "XMLHttpRequest", 
+        "Array.prototype.indexOf",
+        "Array.prototype.filter"
+    ],
+    
+    "use": {
+        "loadModuleByScript": "js-Get.script-1.0-jsan+jhuni"
+    }
+
+});
+
+
+exports.ensure = function(modules, callback) {
+    /* ... */
+};
+
+</source>
+
+Most modules won't even need to have access to on-demand JavaScript, they just need the ability to handle dependencies, so you will rarely have to use such an ensure function.
+
+== Usage ==
+
+=== Server ===
+
+On the server-side you can just use XHR to get the file's JS, regular expressions to get the file's metadata, and eval to get the file's return value. As such, your scripts will execute as is as long as you include a file, META.js, which contains that functionality.
+
+=== Package Managers ===
+
+Package managers will be able to easily get the metadata from each script, so that they can ensure that all of the dependencies are installed locally.
+
+Furthermore, when you download a package you may have the option to wrap each file in a transport format like [[Modules/Transport/A]], that way you can use those files locally using script tag insertion rather then XHR/Eval.
+
+== Use Server ==
+
+The use server is the optimized server that will handle environments with limited HTTP requests such as the browser. The Use Server will use GET args and script tag insertion for optimal performance.
+
+<source>
+script.src = "http://openjsan.org/?v=Utils.program-1.0&b=Firefox-3.5.9"
+</source>
+
+First of all that will get the metadata for Utils.program, then it will get the metadata for all of its dependencies, and build a full list:
+
+<source>
+{
+    "builtins": ["Array.prototype.reduce"],
+    "dependencies": [
+        "js-Utils.add-1.0-jsan+jhuni", 
+        "js-Utils.inc-1.0-jsan+jhuni"
+    ]
+}
+</source>
+
+We can cross out Array.prototype.reduce in this case because we are using Firefox 3.5.9, so we just have to combine those other two files with the requested script. After combining them we get this:
+
+<source>
+(function() {
+
+//Package: Utils.add
+var deps1 = (function() {
+
+    return function() {
+
+        return( Array.prototype.reduce.call(arguments, function(a, b) {
+            return a + b;
+        }) );
+
+    };
+
+})();
+
+//Package: Utils.inc
+var deps2 = (function(add) {
+
+    var exports = {};
+
+    exports.increment = function(val) {
+     return add(val, 1);
+    };
+
+    return exports;
+
+})(deps1);
+
+//Package: Utils.program
+var requestedModule = (function(inc) {
+	
+    var a = 1;
+    inc(a); // 2
+	
+})(deps2);
+
+
+// Now lets register the requested modules
+// Using some register handler:
+
+if (typeof Utils === 'undefined') {
+    Utils = {};    
+}
+
+Utils.add     = deps1;
+Utils.inc     = deps2;
+Utils.program = requestedModule;
+
+})();
+
+</source>
+
+This registers those values into the Utils namespace, however, there may also be an option in the GET args to register them into a secured namespace:
+
+<source>
+
+if (typeof __CJS_Cache__ === 'undefined') {
+    __CJS_Cache__ = {};
+}
+
+__CJS_Cache__['js-Utils.add-1.0-jsan+jhuni']     = deps1;
+__CJS_Cache__['js-Utils.inc-1.0-jsan+jhuni']     = deps2;
+__CJS_Cache__['js-Utils.program-1.0-jsan+jhuni'] = requestedModule;
+
+</source>
+
+Furthermore you may be able to request just the metadata for some modules, using the m flag which stands for metadata:
+
+<source>
+// Returns the metadata for all three of those modules:
+script.src = 'http://openjsan.org/?m=Utils.add-1.0/Utils.inc-1.0/Utils.program-1.0';
+</source>

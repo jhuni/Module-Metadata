@@ -1,0 +1,7 @@
+This is a proposal to store metadata about individual modules similar to how META.json stores metadata about packages.
+
+I think this is a superior system to using require, because require doesn't have the same level of accessibility, extensibility, and configurability as JSON. The require proposal just tries to port a statement from popular server-side languages such as Perl and Python to JavaScript rather then building a JavaScripty solution, and it uses a hacked together regular expression trick to make it work well on the client side. 
+
+This metadata system puts client side performance first and foremost rather then making it some sort of afterthought, all operations in this metadata system are strictly non-blocking and combo loading is used consistently.
+
+Additionally, you can easily define your own metadata format using META handlers. For example if you want a good way of loading CSS or some other file format, META handlers will make that process easy.

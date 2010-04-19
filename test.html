@@ -1,0 +1,34 @@
+<html>
+
+<head>
+
+<script type="text/javascript" src="./lib/META.js"></script>
+
+<script type="text/javascript">
+<!--
+
+META.getJS("./lib/META/HandleUtils/acquireDependencies.js", function(js) {
+	META.HandleUtils.acquireDependencies = eval(js);
+	
+	META.getJS("./lib/META/Handlers/simple.js", function(js) {
+		META.Handlers.simple = eval(js);
+		
+		META.getJS("./lib/Utils/basic.js", function(js) {
+			alert(js);
+		});
+		
+	});
+
+});
+
+
+//-->
+</script>
+
+</head>
+
+<body>
+
+</body>
+
+</html>

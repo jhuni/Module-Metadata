@@ -1,0 +1,19 @@
+<script type="text/javascript" src="http://openjsan.org/&v=Joose&b=Firefox-3.5.8&loaded=Site.InitScript|">
+</script
+
+{
+	"v": "Joose",
+	"b": "Firefox-3.5.8|1.8|a82x2s",
+	"r": "Site.InitScript/Animation.Tabular/Module.Stub"
+}
+
+Given the modules, Site.InitScript, Animation.Tabular, and Module.Stub the Use Server will take all of their complete dependencies and combine them to determine a full list of what modules have been loaded so far, then given that complete list the Use Server will not load any of the dependencies of Joose that have been loaded previously.
+
+This is so that you can request modules with a single HTTP request.
+
+
+
+
+
+
+
