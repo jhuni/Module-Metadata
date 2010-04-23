@@ -1,0 +1,13 @@
+Jbrantly stated that my proposal was "completely trying to reinvent CommonJS." My problem was merely with require() and the idea of multiple blocking-IO requests, however, if you think of require instead as a function which returns an exported API that was previously loaded (perhaps with ensure) then that seems perfectly acceptable. I might even use require myself in that manner. As such I developed some tools which might be useful to someone:
+
+Features for Modules/1.1.1 users: 
+- an optional requires[] key which lets you assist static-analysis tools by informing them of shallow-deps.
+
+- implicit metadata: a script which will build metadata for a commonjs script that isn't directly expressed, this essentially gets all instances of requires() that have string literals to build a requires[] key, this is useful because once a script has metadata in the proper format it can be handled.
+
+Meta Handlers:
+These are functions(){} in which handle data (such as requires[]), and use it to do interesting things. 
+
+I have implented a meta handler "bundler" in which takes any script with its metadata properly defined and it concats all of its dependencies to build a standalone file, a file that is independent of the META() system and independent of any loaders.
+
+I have implemented the transport formats as meta handlers.
