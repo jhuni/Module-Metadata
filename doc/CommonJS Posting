@@ -1,4 +1,4 @@
-Jbrantly stated that my proposal was "completely trying to reinvent CommonJS." My problem was merely with require() and the idea of multiple blocking-IO requests, however, if you think of require instead as a function which returns an exported API that was previously loaded (perhaps with ensure) then that seems perfectly acceptable. I might even use require myself in that manner. As such I developed some tools which might be useful to someone:
+I see no problem with require as long as it isn't being used to create multiple blocking IO requests. As such I developed some tools which might be useful to someone:
 
 Features for Modules/1.1.1 users: 
 - an optional requires[] key which lets you assist static-analysis tools by informing them of shallow-deps.

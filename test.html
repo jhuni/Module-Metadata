@@ -11,17 +11,26 @@ META.getJS("./lib/META/HandleUtils/acquireDependencies.js", function(js) {
 		
 	META.HandleUtils.acquireDependencies = eval(js);
 	
-	META.getJS("./lib/META/Handlers/simple.js", function(js) {
-		META.Handlers.simple = eval(js);
+	META.getJS("./lib/META/Handlers/bundler.js", function(js) {
+		META.Handlers.bundler = eval(js);
 		
 		META.getJS("./lib/META/HandleUtils/parseCJS.js", function(js) {
 			META.HandleUtils.parseCJS = eval(js);
 
-			META.getJS("./lib/Utils/cprogram.js", function(js) {
-				var metadata = META.HandleUtils.parseCJS(js);
-				META.Handlers.simple(metadata, js, function(njs) {
-					alert(njs);	
+			META.getJS("./lib/META/Handlers/transportD.js", function(js) {
+				META.Handlers.transportD = eval(js);
+
+				META.getJS("./lib/Utils/cprogram.js", function(js) {
+					
+					var metadata = META.HandleUtils.parseCJS(js);
+					metadata.id = "program";
+					
+					META.Handlers.transportD(metadata, js, function(njs) {
+						alert(njs);	
+					});
+					
 				});
+			
 			});
 		
 		});
