@@ -1,4 +1,3 @@
-
 Metaprogramming:
 If you want get to work with metaprogramming it is best to use a language with homoiconicity like Lisp. However, if you want to create a mess you can also try to do things like source filters and code generation in language with syntax like JavaScript. This mess is a result of trying to do that.
 
@@ -8,6 +7,14 @@ Technical Details:
 This system can be used to store metadata about individual modules similar to how META.json stores metadata about packages. 
 
 This metadata is later used at compile-time or run-time by source filters which produce optimized versions of your code. The optimized modules use strictly non-blocking IO and they include only the files that are needed.
+
+Available source filters:
+
+Identity - this won't change your module at all
+Funcwrap - this just wraps your module in an anonymously executing function giving you lexical scoping
+Bundler - this will bundle a standalone version of your module free of any dependencies
+Simple - this will output a simple implementation of your module
+TransportD - this will output a module that works with CommonJS module transport D
 
 Metaprogramming vs CommonJS Module System
 I think this is a superior system to using require, because require doesn't have the same level of accessibility, extensibility, and configurability as JSON. The require proposal just tries to port a statement from popular server-side languages such as Perl and Python to JavaScript rather then building a JavaScripty solution, and it uses a hacked together regular expression trick to make it work well on the client side. 
