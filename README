@@ -1,7 +1,13 @@
-This is a proposal to store metadata about individual modules similar to how META.json stores metadata about packages.
 
+Metaprogramming:
+If you want get to work with metaprogramming it is best to use a language with homoiconicity like Lisp. However, if you want to create a mess you can also try to do things like source filters and code generation in language with syntax like JavaScript. This mess is a result of trying to do that.
+
+Even though JavaScript metaprogramming is messy, I still believe that this is cleaner and more effective then the CommonJS module system with its splattering of calls to synchronous require.
+
+Technical Details:
+This system can be used to store metadata about individual modules similar to how META.json stores metadata about packages. 
+
+This metadata is later used at compile-time or run-time by source filters which produce optimized versions of your code. The optimized modules use strictly non-blocking IO and they include only the files that are needed.
+
+Metaprogramming vs CommonJS Module System
 I think this is a superior system to using require, because require doesn't have the same level of accessibility, extensibility, and configurability as JSON. The require proposal just tries to port a statement from popular server-side languages such as Perl and Python to JavaScript rather then building a JavaScripty solution, and it uses a hacked together regular expression trick to make it work well on the client side. 
-
-This metadata system puts client side performance first and foremost rather then making it some sort of afterthought, all operations in this metadata system are strictly non-blocking and combo loading is used consistently.
-
-Additionally, you can easily define your own metadata format using META handlers. For example if you want a good way of loading CSS or some other file format, META handlers will make that process easy.
