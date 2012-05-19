@@ -1,17 +1,17 @@
 Metaprogramming:
-The ClojureScript programming language provides the following namespace system to JavaScript users:
+The ClojureScript programming language provides the following namespace system:
 
 (ns js.sample.api
   (:require [goog.dom :as dom]
             [goog.style :as style]))
 
-JSON can be used to describe all of the same data structures that S-expressions can so the above
+JSON can be used to describe all of the same data structures that S-expressions can so the above declaration can also be expressed as:
 
 {"id": "js.sample.api",
- "require": {"goog.dom": {"as": "dom"},
+ "require": {"goog.dom":   {"as": "dom"},
              "goog.style": {"as": "style"}}}
 
-Unlike the ClojureScript namespace system, META.json is based upon pure JavaScript and JSON.
+Using JSON as a foundation, the META.json system provides a pure JavaScript module metadata system.
 
 Technical Details:
 This system can be used to store metadata about individual modules similar to how META.json stores metadata about packages. 
