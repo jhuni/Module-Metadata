@@ -1,7 +1,17 @@
 Metaprogramming:
-If you want get to work with metaprogramming it is best to use a language with homoiconicity like Lisp. However, if you want to create a mess you can also try to do things like source filters and code generation in language with syntax like JavaScript. This mess is a result of trying to do that.
+The ClojureScript programming language provides the following namespace system to JavaScript users:
 
-Even though JavaScript metaprogramming is messy, I still believe that this is cleaner and more effective then the CommonJS module system with its splattering of calls to synchronous require.
+(ns js.sample.api
+  (:require [goog.dom :as dom]
+            [goog.style :as style]))
+
+JSON can be used to describe all of the same data structures that S-expressions can so the above
+
+{"id": "js.sample.api",
+ "require": {"goog.dom": {"as": "dom"},
+             "goog.style": {"as": "style"}}}
+
+Unlike the ClojureScript namespace system, META.json is based upon pure JavaScript and JSON.
 
 Technical Details:
 This system can be used to store metadata about individual modules similar to how META.json stores metadata about packages. 
